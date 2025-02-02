@@ -2,9 +2,13 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from .database import SessionLocal
-from .models import ProductCreate, ProductUpdateChat
-from .crud import create_product, update_product_chat, get_product_ids, get_product_by_id
+
+
+
+from database import SessionLocal
+from models import ProductCreate, ProductUpdateChat
+from crud import create_product, update_product_chat, get_product_ids, get_product_by_id
+
 
 app = FastAPI()
 

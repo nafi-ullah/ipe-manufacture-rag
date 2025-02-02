@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import uuid
 import json
-from .database import Product
-from .models import ProductCreate, ProductUpdateChat
+from database import Product
+from models import ProductCreate, ProductUpdateChat
 from backend.core import run_llm_chat
 
 def create_product(db: Session, product_data: ProductCreate):
@@ -27,22 +27,22 @@ def update_product_chat(db: Session, product_id: str, chat_update: ProductUpdate
     if not product:
         return None
 
-    # Append the new human prompt
-    new_chat_entry = {"role": "human", "message": chat_update.prompt}
-
-        # Ensure chat_history is correctly formatted as a list of dictionaries
+    # Ensure chat_history is correctly formatted as a list of dictionaries
     chat_history = product.chat_history
-    if isinstance(chat_history, str):  # If it's stored as a JSON string
+    if isinstance(chat_history, str):  # If it's stored as a JSON string in DB
         chat_history = json.loads(chat_history)
 
-    # Run LLM chat function with existing history
-    llm_response = run_llm_chat(query=chat_update.prompt, chat_history=product.chat_history)
+    # Use a valid role and 'content' key for the user's prompt
+    new_chat_entry = {"role": "human", "content": chat_update.prompt}
 
-    # Extract AI response
-    ai_response = {"role": "AI", "message": llm_response['answer']}
+    # Get the LLM's answer using existing chat history
+    llm_response = run_llm_chat(query=chat_update.prompt, chat_history=chat_history)
 
-    # Append both human and AI response to chat history
-    updated_chat_history = product.chat_history + [new_chat_entry, ai_response]
+    # Use 'assistant' for the AI role and 'content' for the AI response
+    ai_response = {"role": "assistant", "content": llm_response['answer']}
+
+    # Update the product's chat history
+    updated_chat_history = chat_history + [new_chat_entry, ai_response]
     product.chat_history = updated_chat_history
 
     db.commit()
