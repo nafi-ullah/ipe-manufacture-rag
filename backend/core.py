@@ -52,6 +52,6 @@ def run_llm(query: str):
     return result
 
 
-if __name__ == "__main__":
-    res = run_llm(query="How many hackathon nafi won and what are thorse? create the list of hackathon nafi won.")
-    print(res["answer"])
+# if __name__ == "__main__":
+#     res = run_llm(query="How many hackathon nafi won and what are thorse? create the list of hackathon nafi won.")
+#     print(res["answer"])

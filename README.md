@@ -24,3 +24,10 @@
 
 
    pip install tiktoken pinecone 
+
+   pip freeze > requirements.txt
+
+
+pip install fastapi uvicorn pydantic sqlalchemy sqlite3
+
+uvicorn main:app --reload
