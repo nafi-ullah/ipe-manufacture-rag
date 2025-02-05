@@ -45,10 +45,10 @@ def get_product_details(image_bytes):
         return json.dumps({'error': 'Failed to upload image.', 'details': str(e)})
 
     analysis_prompt = """
-    In the given image, analyze the mug thoroughly. 
+    In the given image, analyze the bottle or mug thoroughly. 
     Identify any defects such as cracks, chips, discoloration, uneven glazing, handle issues, or manufacturing flaws.
-    If there is any damage, describe it in detail, including its location and possible causes. Additionally, provide an analysis of the mug’s material, design, and functionality, explaining its potential use and quality based on its visible characteristics.
-    if you dont found any mug then imagine a broken mug and explain about that mug.
+    If there is any damage, describe it in detail, including its location and possible causes. Additionally, provide an analysis of the bottle or mug’s material, design, and functionality, explaining its potential use and quality based on its visible characteristics.
+    if you dont found any bottle or mug then imagine a broken bottle or mug and explain about that bottle mug.
     """
     
     if not uploaded_image_path or not analysis_prompt:

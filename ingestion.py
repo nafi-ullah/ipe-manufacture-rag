@@ -16,7 +16,7 @@ from consts import INDEX_NAME
 
 
 def ingest_docs() -> None:
-    loader = TextLoader("backend/nafidetails.txt")
+    loader = TextLoader("backend/bottledetails.txt")
 
     raw_documents = loader.load()
     print("splitting...")
