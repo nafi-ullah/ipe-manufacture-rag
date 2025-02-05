@@ -17,6 +17,9 @@ export default function Page() {
   const [productIds, setProductIds] = useState<string[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [chatInput, setChatInput] = useState("");
+  const [humanMessages, setHumanMessages] = useState<string[]>([]);
+  const [assistantMessages, setAssistantMessages] = useState<string[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   // Fetch product IDs on mount
   useEffect(() => {
@@ -34,7 +37,21 @@ export default function Page() {
   const fetchProductDetails = (productId: string) => {
     fetch(`${BACKEND_URL}/get_product/${productId}`)
       .then((res) => res.json())
-      .then((data) => setSelectedProduct(data))
+      .then((data) => {
+        setSelectedProduct(data);
+
+        // Extract messages into separate arrays
+        const humanMsgs: string[] = [];
+        const assistantMsgs: string[] = [];
+
+        data.chat_history.forEach((chat: any) => {
+          if (chat.role === "human") humanMsgs.push(chat.content);
+          else if (chat.role === "assistant") assistantMsgs.push(chat.content);
+        });
+
+        setHumanMessages(humanMsgs);
+        setAssistantMessages(assistantMsgs);
+      })
       .catch((err) => console.error("Error fetching product details:", err));
   };
 
@@ -42,8 +59,13 @@ export default function Page() {
   const handleSendChat = async () => {
     if (!selectedProduct || !chatInput.trim()) return;
 
+    const newMessage = chatInput;
+    setChatInput(""); // Clear input field
+    setIsTyping(true); // Show typing loader
+    setHumanMessages((prev) => [...prev, newMessage]); // Push human message
+
     const payload = {
-      prompt: chatInput,
+      prompt: newMessage,
       response: "Processing...", // Placeholder for now
     };
 
@@ -60,13 +82,20 @@ export default function Page() {
       );
 
       if (response.ok) {
-        setChatInput(""); // Clear input field
-        fetchProductDetails(selectedProduct.product_id); // Reload product details
+        const data = await response.json();
+        const latestChatHistory = data.product.chat_history;
+        const lastAssistantMessage = latestChatHistory[latestChatHistory.length - 1];
+
+        if (lastAssistantMessage.role === "assistant") {
+          setAssistantMessages((prev) => [...prev, lastAssistantMessage.content]);
+        }
       } else {
         console.error("Failed to update chat.");
       }
     } catch (error) {
       console.error("Error sending chat message:", error);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -105,21 +134,29 @@ export default function Page() {
             />
 
             {/* Chat History */}
-            <div className="bg-gray-100 p-4 rounded-lg h-64 overflow-y-auto">
-              {selectedProduct.chat_history.map((chat, index) => (
-                <div
-                  key={index}
-                  className={`mb-3 p-3 rounded-lg ${
-                    chat.role === "human"
-                      ? "bg-[#DCD6F7] text-black self-end"
-                      : "bg-[#A6B1E1] text-white self-start"
-                  }`}
-                >
-                  <p className="text-sm">
-                    <strong>{chat.role === "human" ? "You" : "AI"}:</strong> {chat.content}
-                  </p>
+            <div className="bg-gray-100 p-4 rounded-lg min-h-[70vh] overflow-y-auto">
+              {humanMessages.map((msg, index) => (
+                <div key={index}>
+                  {/* Human Message */}
+                  <div className="mb-3 p-3 rounded-lg bg-[#DCD6F7] text-black self-end">
+                    <strong>You:</strong> {msg}
+                  </div>
+
+                  {/* Assistant Message (if exists at same index) */}
+                  {assistantMessages[index] && (
+                    <div className="mb-3 p-3 rounded-lg bg-[#A6B1E1] text-white self-start">
+                      <strong>AI:</strong> {assistantMessages[index]}
+                    </div>
+                  )}
                 </div>
               ))}
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="p-3 rounded-lg bg-[#A6B1E1] text-white self-start">
+                  <strong>AI:</strong> Typing...
+                </div>
+              )}
             </div>
 
             {/* Chat Input */}
