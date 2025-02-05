@@ -102,7 +102,7 @@ export default function Page() {
   return (
     <div className="flex h-screen bg-white">
       {/* Left Sidebar */}
-      <aside className="w-1/5 bg-[#DCD6F7] p-4 shadow-md">
+      <aside className="w-1/5 bg-[#DCD6F7] p-4 shadow-md max-h-[90vh] overflow-y-scroll">
         <h2 className="text-lg font-semibold text-[#424874] mb-4">Products</h2>
         <ul className="space-y-2">
           {productIds.map((id, index) => (
@@ -121,20 +121,25 @@ export default function Page() {
       <main className="flex-1 p-6 bg-[#F8F8F8]">
         {selectedProduct ? (
           <div className="bg-white shadow-md p-6 rounded-lg">
+            <div className="flex justify-between">
+              <div>
             <h2 className="text-2xl font-bold text-[#424874] mb-2">
               {selectedProduct.product_name}
             </h2>
             <p className="text-gray-600 mb-4">
               Captured at: {new Date(selectedProduct.capture_time).toLocaleString()}
             </p>
+            </div>
             <img
               src={selectedProduct.image_url}
               alt="Product"
               className="w-full max-h-60 max-w-96 object-cover rounded-lg mb-4"
             />
 
+</div>
+
             {/* Chat History */}
-            <div className="bg-gray-100 p-4 rounded-lg min-h-[50vh] overflow-y-auto">
+            <div className="bg-gray-100 p-4 rounded-lg max-h-[50vh] overflow-y-scroll">
               {humanMessages.map((msg, index) => (
                 <div key={index}>
                   {/* Human Message */}

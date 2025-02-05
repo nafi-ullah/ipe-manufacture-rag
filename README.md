@@ -31,3 +31,11 @@
 pip install fastapi uvicorn pydantic sqlalchemy sqlite3
 
 uvicorn main:app --reload
+
+
+
+docker build -t rag-app .
+
+
+docker run -d -p 8000:8000 --env-file .env rag-app
+
