@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 from database import SessionLocal
@@ -11,6 +11,14 @@ from crud import create_product, update_product_chat, get_product_ids, get_produ
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Dependency to get the DB session
 def get_db():
@@ -22,8 +30,12 @@ def get_db():
 
 @app.post("/create_product/")
 def create_product_api(product: ProductCreate, db: Session = Depends(get_db)):
-    created_product = create_product(db, product)
+    product_dict = product.model_dump()
+    product_dict["capture_time"] = datetime.now(timezone.utc)
+
+    created_product = create_product(db, ProductCreate(**product_dict))
     return {"message": "Product created successfully", "product_id": created_product.product_id}
+
 
 @app.put("/update_product_chat/{product_id}")
 def update_chat_history(product_id: str, chat_update: ProductUpdateChat, db: Session = Depends(get_db)):

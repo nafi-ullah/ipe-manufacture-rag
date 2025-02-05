@@ -1,11 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ProductCreate(BaseModel):
     product_name: str
     image_url: str
-    capture_time: datetime
+    capture_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))  # Use timezone-aware datetime
 
 class ProductUpdateChat(BaseModel):
     prompt: str
