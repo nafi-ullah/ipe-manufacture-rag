@@ -3,17 +3,18 @@ from datetime import datetime
 import uuid
 import json
 from database import Product
-from models import ProductCreate, ProductUpdateChat
+from models import ProductCreate, ProductUpdateChat, ProductCreateWithChat
 from backend.core import run_llm_chat
 
-def create_product(db: Session, product_data: ProductCreate):
+def create_product(db: Session, product_data: ProductCreateWithChat):
     product_id = datetime.now().strftime("%Y%m%d%H%M%S%f")  # Unique timestamp-based ID
+    chat_history = [chat.dict() for chat in product_data.chat_history] if product_data.chat_history else []
     db_product = Product(
         product_id=product_id,
         product_name=product_data.product_name,
         image_url=product_data.image_url,
         capture_time=product_data.capture_time,
-        chat_history=[],
+        chat_history=chat_history,
         solution=[],
         relevant_machines=[]
     )

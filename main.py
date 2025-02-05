@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 from database import SessionLocal
-from models import ProductCreate, ProductUpdateChat
+from models import ProductCreate, ProductUpdateChat, ProductCreateWithChat
 from crud import create_product, update_product_chat, get_product_ids, get_product_by_id
 
 
@@ -36,6 +36,14 @@ def create_product_api(product: ProductCreate, db: Session = Depends(get_db)):
     created_product = create_product(db, ProductCreate(**product_dict))
     return {"message": "Product created successfully", "product_id": created_product.product_id}
 
+
+@app.post("/create_product_with_message/")
+def create_product_api(product: ProductCreateWithChat, db: Session = Depends(get_db)):
+    product_dict = product.model_dump()
+    product_dict["capture_time"] = datetime.now(timezone.utc)
+
+    created_product = create_product(db, ProductCreateWithChat(**product_dict))
+    return {"message": "Product created successfully", "product_id": created_product.product_id}
 
 @app.put("/update_product_chat/{product_id}")
 def update_chat_history(product_id: str, chat_update: ProductUpdateChat, db: Session = Depends(get_db)):

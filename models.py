@@ -7,6 +7,20 @@ class ProductCreate(BaseModel):
     image_url: str
     capture_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))  # Use timezone-aware datetime
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ProductCreateWithChat(BaseModel):
+    product_name: str
+    image_url: str
+    capture_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    chat_history: List[ChatMessage] = [
+        ChatMessage(role="human", content="Explain about the product?"),
+        ChatMessage(role="assistant", content="Thinking about the product!!"),
+    ]
+
+
 class ProductUpdateChat(BaseModel):
     prompt: str
     response: str

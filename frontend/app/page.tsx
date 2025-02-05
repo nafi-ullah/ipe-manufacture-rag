@@ -130,11 +130,11 @@ export default function Page() {
             <img
               src={selectedProduct.image_url}
               alt="Product"
-              className="w-full max-h-60 object-cover rounded-lg mb-4"
+              className="w-full max-h-60 max-w-96 object-cover rounded-lg mb-4"
             />
 
             {/* Chat History */}
-            <div className="bg-gray-100 p-4 rounded-lg min-h-[70vh] overflow-y-auto">
+            <div className="bg-gray-100 p-4 rounded-lg min-h-[50vh] overflow-y-auto">
               {humanMessages.map((msg, index) => (
                 <div key={index}>
                   {/* Human Message */}
